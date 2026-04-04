@@ -1,8 +1,17 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
     kotlin("kapt")
+}
+
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        load(localPropertiesFile.inputStream())
+    }
 }
 
 android {
@@ -22,8 +31,7 @@ android {
         }
 
         // Google Maps API key - set in local.properties (not checked into source control)
-        // maps.apiKey=YOUR_GOOGLE_MAPS_API_KEY
-        manifestPlaceholders["mapsApiKey"] = project.findProperty("maps.apiKey") as String? ?: ""
+        manifestPlaceholders["mapsApiKey"] = localProperties.getProperty("mapsApiKey") ?: ""
     }
 
     buildTypes {

@@ -38,6 +38,12 @@ class UserPreferencesRepository @Inject constructor(
         val FAVORITE_ROUTES = stringSetPreferencesKey("favorite_routes")
         val FAVORITE_STATIONS = stringSetPreferencesKey("favorite_stations")
 
+        // Onboarding preferences
+        val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+        val PREFERRED_SYSTEM = stringPreferencesKey("preferred_system")
+        val PRIMARY_DEPARTURE_STATION = stringPreferencesKey("primary_departure_station")
+        val PRIMARY_DESTINATION_STATION = stringPreferencesKey("primary_destination_station")
+
         // RatSense AI preferences
         val HOME_STATION = stringPreferencesKey("home_station")
         val WORK_STATION = stringPreferencesKey("work_station")
@@ -62,6 +68,12 @@ class UserPreferencesRepository @Inject constructor(
         val lastRefreshTime: Long = 0L,
         val favoriteRoutes: Set<String> = emptySet(),
         val favoriteStations: Set<String> = emptySet(),
+
+        // Onboarding
+        val onboardingCompleted: Boolean = false,
+        val preferredSystem: String? = null,
+        val primaryDepartureStation: String? = null,
+        val primaryDestinationStation: String? = null,
 
         // RatSense AI fields
         val homeStation: String? = null,
@@ -97,6 +109,12 @@ class UserPreferencesRepository @Inject constructor(
                 lastRefreshTime = preferences[PreferencesKeys.LAST_REFRESH_TIME] ?: 0L,
                 favoriteRoutes = preferences[PreferencesKeys.FAVORITE_ROUTES] ?: emptySet(),
                 favoriteStations = preferences[PreferencesKeys.FAVORITE_STATIONS] ?: emptySet(),
+
+                // Onboarding
+                onboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false,
+                preferredSystem = preferences[PreferencesKeys.PREFERRED_SYSTEM],
+                primaryDepartureStation = preferences[PreferencesKeys.PRIMARY_DEPARTURE_STATION],
+                primaryDestinationStation = preferences[PreferencesKeys.PRIMARY_DESTINATION_STATION],
 
                 // RatSense AI fields
                 homeStation = preferences[PreferencesKeys.HOME_STATION],
@@ -223,6 +241,44 @@ class UserPreferencesRepository @Inject constructor(
     suspend fun clearAllPreferences() {
         dataStore.edit { preferences ->
             preferences.clear()
+        }
+    }
+
+    // Onboarding methods
+
+    suspend fun setOnboardingCompleted(completed: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.ONBOARDING_COMPLETED] = completed
+        }
+    }
+
+    suspend fun setPreferredSystem(systemCode: String?) {
+        dataStore.edit { preferences ->
+            if (systemCode != null) {
+                preferences[PreferencesKeys.PREFERRED_SYSTEM] = systemCode
+            } else {
+                preferences.remove(PreferencesKeys.PREFERRED_SYSTEM)
+            }
+        }
+    }
+
+    suspend fun setPrimaryDepartureStation(stationCode: String?) {
+        dataStore.edit { preferences ->
+            if (stationCode != null) {
+                preferences[PreferencesKeys.PRIMARY_DEPARTURE_STATION] = stationCode
+            } else {
+                preferences.remove(PreferencesKeys.PRIMARY_DEPARTURE_STATION)
+            }
+        }
+    }
+
+    suspend fun setPrimaryDestinationStation(stationCode: String?) {
+        dataStore.edit { preferences ->
+            if (stationCode != null) {
+                preferences[PreferencesKeys.PRIMARY_DESTINATION_STATION] = stationCode
+            } else {
+                preferences.remove(PreferencesKeys.PRIMARY_DESTINATION_STATION)
+            }
         }
     }
 

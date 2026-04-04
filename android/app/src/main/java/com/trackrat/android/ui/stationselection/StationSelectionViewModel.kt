@@ -57,22 +57,31 @@ class StationSelectionViewModel @Inject constructor(
 
     /**
      * Stations to display on the departure selection screen.
-     * Shows search results when searching, otherwise shows favorites (or all departure stations if no favorites).
+     * Order (when not searching):
+     * 1. Primary departure station set during onboarding (if any)
+     * 2. Favorited departure stations (or all departure stations if none favorited)
+     * When searching: search results only.
      */
     val displayedDepartureStations: StateFlow<List<Station>> = combine(
         userPreferences,
         _searchResults
     ) { prefs, searchResults ->
         when {
-            // If we have search results, show them
             searchResults.isNotEmpty() -> searchResults
-            // Otherwise show favorites, or all departure stations if no favorites
             else -> {
                 val favoriteStationCodes = prefs.favoriteStations
-                if (favoriteStationCodes.isEmpty()) {
+                val baseList = if (favoriteStationCodes.isEmpty()) {
                     Stations.DEPARTURE_STATIONS
                 } else {
                     Stations.DEPARTURE_STATIONS.filter { it.code in favoriteStationCodes }
+                }
+                // Prepend primary departure station, ensuring it isn't duplicated
+                val primaryCode = prefs.primaryDepartureStation
+                val primaryStation = primaryCode?.let { Stations.getStation(it) }
+                if (primaryStation != null) {
+                    listOf(primaryStation) + baseList.filter { it.code != primaryStation.code }
+                } else {
+                    baseList
                 }
             }
         }
@@ -84,22 +93,31 @@ class StationSelectionViewModel @Inject constructor(
 
     /**
      * Stations to display on the destination selection screen.
-     * Shows search results when searching, otherwise shows favorites (or all stations if no favorites).
+     * Order (when not searching):
+     * 1. Primary destination station set during onboarding (if any)
+     * 2. Favorited stations (or all stations if none favorited)
+     * When searching: search results only.
      */
     val displayedDestinationStations: StateFlow<List<Station>> = combine(
         userPreferences,
         _searchResults
     ) { prefs, searchResults ->
         when {
-            // If we have search results, show them
             searchResults.isNotEmpty() -> searchResults
-            // Otherwise show favorites, or all stations if no favorites
             else -> {
                 val favoriteStationCodes = prefs.favoriteStations
-                if (favoriteStationCodes.isEmpty()) {
+                val baseList = if (favoriteStationCodes.isEmpty()) {
                     Stations.ALL_STATIONS
                 } else {
                     Stations.ALL_STATIONS.filter { it.code in favoriteStationCodes }
+                }
+                // Prepend primary destination station, ensuring it isn't duplicated
+                val primaryCode = prefs.primaryDestinationStation
+                val primaryStation = primaryCode?.let { Stations.getStation(it) }
+                if (primaryStation != null) {
+                    listOf(primaryStation) + baseList.filter { it.code != primaryStation.code }
+                } else {
+                    baseList
                 }
             }
         }

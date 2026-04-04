@@ -1,34 +1,45 @@
 package com.trackrat.android.ui.onboarding
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Work
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.trackrat.android.data.models.Station
+import com.trackrat.android.data.models.Stations
+import com.trackrat.android.data.models.TransitSystem
 import com.trackrat.android.ui.components.GlassmorphicCard
+import com.trackrat.android.ui.components.GlassmorphicSearchCard
 import kotlinx.coroutines.launch
 
 /**
- * Onboarding flow for new users
- * Guides through:
- * 1. Welcome + RatSense intro
- * 2. Set home/work stations for AI suggestions
- * 3. Notification permissions explanation
+ * Onboarding flow shown to first-time users.
+ *
+ * Page 0 – Transit system selection
+ * Page 1 – Primary departure station
+ * Page 2 – Primary destination station
+ *
+ * Selections are persisted via [OnboardingViewModel.completeOnboarding] when the
+ * user taps "Get Started" on the final page, or "Skip" to save without selections.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -39,8 +50,11 @@ fun OnboardingScreen(
     val pagerState = rememberPagerState(pageCount = { 3 })
     val scope = rememberCoroutineScope()
 
-    val homeStation by viewModel.homeStation.collectAsState()
-    val workStation by viewModel.workStation.collectAsState()
+    val selectedSystem by viewModel.selectedSystem.collectAsState()
+    val primaryDeparture by viewModel.primaryDeparture.collectAsState()
+    val primaryDestination by viewModel.primaryDestination.collectAsState()
+    val departureSearchResults by viewModel.departureSearchResults.collectAsState()
+    val destinationSearchResults by viewModel.destinationSearchResults.collectAsState()
 
     Scaffold(
         topBar = {
@@ -58,10 +72,7 @@ fun OnboardingScreen(
                                 pagerState.animateScrollToPage(pagerState.currentPage - 1)
                             }
                         }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Back"
-                            )
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                         }
                     }
                 }
@@ -74,38 +85,54 @@ fun OnboardingScreen(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
         ) {
-            // Pager
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                userScrollEnabled = false
             ) { page ->
                 when (page) {
-                    0 -> WelcomePage()
-                    1 -> SetupStationsPage(
-                        homeStation = homeStation,
-                        workStation = workStation,
-                        onHomeStationClick = {
-                            // TODO: Show station picker dialog
-                        },
-                        onWorkStationClick = {
-                            // TODO: Show station picker dialog
+                    0 -> TransitSystemPage(
+                        selectedSystem = selectedSystem,
+                        onSystemSelected = { system ->
+                            viewModel.selectSystem(system)
+                            scope.launch { pagerState.animateScrollToPage(1) }
                         }
                     )
-                    2 -> NotificationsPage()
+                    1 -> StationPickerPage(
+                        title = "Primary Departure Station",
+                        subtitle = "Where do you typically start your journey?",
+                        selectedStation = primaryDeparture,
+                        searchResults = departureSearchResults,
+                        defaultStations = Stations.DEPARTURE_STATIONS,
+                        excludeStation = null,
+                        onStationSelected = { viewModel.selectPrimaryDeparture(it) },
+                        onStationCleared = { viewModel.clearPrimaryDeparture() },
+                        onSearch = { viewModel.searchDepartureStations(it) }
+                    )
+                    2 -> StationPickerPage(
+                        title = "Primary Destination Station",
+                        subtitle = "Where do you typically travel to?",
+                        selectedStation = primaryDestination,
+                        searchResults = destinationSearchResults,
+                        defaultStations = Stations.ALL_STATIONS,
+                        excludeStation = primaryDeparture,
+                        onStationSelected = { viewModel.selectPrimaryDestination(it) },
+                        onStationCleared = { viewModel.clearPrimaryDestination() },
+                        onSearch = { viewModel.searchDestinationStations(it) }
+                    )
                 }
             }
 
-            // Navigation buttons
+            // Bottom navigation row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Progress indicator
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+                // Page dots
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     repeat(3) { index ->
                         Box(
                             modifier = Modifier
@@ -121,13 +148,10 @@ fun OnboardingScreen(
                     }
                 }
 
-                // Next/Done button
                 Button(
                     onClick = {
                         if (pagerState.currentPage < 2) {
-                            scope.launch {
-                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                            }
+                            scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
                         } else {
                             scope.launch {
                                 viewModel.completeOnboarding()
@@ -137,309 +161,343 @@ fun OnboardingScreen(
                     }
                 ) {
                     Icon(
-                        imageVector = if (pagerState.currentPage < 2)
-                            Icons.Default.ArrowForward
-                        else
-                            Icons.Default.Check,
-                        contentDescription = if (pagerState.currentPage < 2) "Next" else "Done"
+                        imageVector = if (pagerState.currentPage < 2) Icons.Default.ArrowForward else Icons.Default.Check,
+                        contentDescription = null
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(if (pagerState.currentPage < 2) "Next" else "Get Started")
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = when (pagerState.currentPage) {
+                            0 -> if (selectedSystem != null) "Next" else "Skip"
+                            1 -> if (primaryDeparture != null) "Next" else "Skip"
+                            else -> if (primaryDestination != null) "Get Started" else "Skip"
+                        }
+                    )
                 }
             }
         }
     }
 }
 
-@Composable
-private fun WelcomePage() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "\uD83D\uDE82",
-            style = MaterialTheme.typography.displayLarge,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
-
-        Text(
-            text = "Welcome to TrackRat!",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Track NJ Transit and Amtrak trains in real-time with live updates, delay alerts, and AI-powered journey suggestions.",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        GlassmorphicCard(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "✨ RatSense AI",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Get intelligent journey suggestions based on time of day, your commute patterns, and recent searches.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
-                )
-            }
-        }
-    }
-}
+// ---------------------------------------------------------------------------
+// Page 0 – Transit system selection
+// ---------------------------------------------------------------------------
 
 @Composable
-private fun SetupStationsPage(
-    homeStation: String?,
-    workStation: String?,
-    onHomeStationClick: () -> Unit,
-    onWorkStationClick: () -> Unit
+private fun TransitSystemPage(
+    selectedSystem: TransitSystem?,
+    onSystemSelected: (TransitSystem) -> Unit
 ) {
+    var showAdditional by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(horizontal = 24.dp)
     ) {
-        Icon(
-            imageVector = Icons.Default.Home,
-            contentDescription = "Home",
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(Modifier.height(24.dp))
 
         Text(
-            text = "Set Your Home & Work Stations",
+            text = "Which transit system\ndo you use the most?",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "RatSense will suggest your commute based on the time of day. You can change these later in settings.",
-            style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Home station button
-        GlassmorphicCard(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Button(
-                onClick = onHomeStationClick,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = "Home",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Home Station",
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Text(
-                        text = homeStation ?: "Tap to select",
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Work station button
-        GlassmorphicCard(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Button(
-                onClick = onWorkStationClick,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Work,
-                    contentDescription = "Work",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Work Station",
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Text(
-                        text = workStation ?: "Tap to select",
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(8.dp))
 
         Text(
-            text = "You can skip this and set them up later",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-            textAlign = TextAlign.Center
+            text = "You can always change this later",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
+
+        Spacer(Modifier.height(24.dp))
+
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.weight(1f)
+        ) {
+            items(TransitSystem.mainSystems) { system ->
+                SystemCard(
+                    system = system,
+                    isSelected = system == selectedSystem,
+                    onClick = { onSystemSelected(system) }
+                )
+            }
+
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showAdditional = !showAdditional }
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = if (showAdditional) "▲  Hide Additional Systems" else "▼  Additional Systems",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                    ) {
+                        Text(
+                            text = "beta",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+            }
+
+            if (showAdditional) {
+                items(TransitSystem.betaSystems) { system ->
+                    SystemCard(
+                        system = system,
+                        isSelected = system == selectedSystem,
+                        onClick = { onSystemSelected(system) }
+                    )
+                }
+            }
+        }
     }
 }
 
 @Composable
-private fun NotificationsPage() {
+private fun SystemCard(
+    system: TransitSystem,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    GlassmorphicCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = system.displayName,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            if (isSelected) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Selected",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Pages 1 & 2 – Station picker (reused for departure and destination)
+// ---------------------------------------------------------------------------
+
+@Composable
+private fun StationPickerPage(
+    title: String,
+    subtitle: String,
+    selectedStation: Station?,
+    searchResults: List<Station>,
+    defaultStations: List<Station>,
+    excludeStation: Station?,
+    onStationSelected: (Station) -> Unit,
+    onStationCleared: () -> Unit,
+    onSearch: (String) -> Unit
+) {
+    var searchText by remember { mutableStateOf("") }
+
+    val displayedStations = remember(searchResults, defaultStations, excludeStation, selectedStation) {
+        val base = if (searchResults.isNotEmpty()) searchResults else defaultStations
+        base.filter { it.code != excludeStation?.code }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(horizontal = 24.dp)
     ) {
-        Icon(
-            imageVector = Icons.Default.Notifications,
-            contentDescription = "Notifications",
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(Modifier.height(24.dp))
 
         Text(
-            text = "Stay Updated",
+            text = title,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(8.dp))
 
         Text(
-            text = "Get real-time notifications when you track a train, including:",
-            style = MaterialTheme.typography.bodyLarge,
+            text = subtitle,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(Modifier.height(16.dp))
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+        // Selected station chip
+        AnimatedVisibility(visible = selectedStation != null) {
+            selectedStation?.let { station ->
+                GlassmorphicCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = station.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = station.code,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                            )
+                        }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            IconButton(
+                                onClick = {
+                                    onStationCleared()
+                                    searchText = ""
+                                    onSearch("")
+                                },
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Clear selection",
+                                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Search bar
+        GlassmorphicSearchCard(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = searchText,
+                onValueChange = { query ->
+                    searchText = query
+                    onSearch(query.trim())
+                },
+                placeholder = {
+                    Text(
+                        text = "Search stations",
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search",
+                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                    )
+                },
+                trailingIcon = if (searchText.isNotBlank()) {
+                    {
+                        IconButton(onClick = {
+                            searchText = ""
+                            onSearch("")
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Clear search",
+                                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                            )
+                        }
+                    }
+                } else null,
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        // Station list
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.weight(1f)
         ) {
-            GlassmorphicCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+            items(displayedStations, key = { it.code }) { station ->
+                val isSelected = station.code == selectedStation?.code
+                GlassmorphicCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onStationSelected(station) }
                 ) {
-                    Text(
-                        text = "🛤️",
-                        style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.padding(end = 12.dp)
-                    )
-                    Column {
-                        Text(
-                            text = "Track Assignments",
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            text = "Know which track your train departs from",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                        )
-                    }
-                }
-            }
-
-            GlassmorphicCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "⏰",
-                        style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.padding(end = 12.dp)
-                    )
-                    Column {
-                        Text(
-                            text = "Delay Alerts",
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            text = "Instant updates when your train is delayed",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                        )
-                    }
-                }
-            }
-
-            GlassmorphicCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "📍",
-                        style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.padding(end = 12.dp)
-                    )
-                    Column {
-                        Text(
-                            text = "Journey Progress",
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            text = "Track your train in real-time as it travels",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                        )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = station.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                                color = if (isSelected)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onBackground
+                            )
+                            Text(
+                                text = station.code,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                            )
+                        }
+                        if (isSelected) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Selected",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
             }

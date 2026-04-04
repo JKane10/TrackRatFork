@@ -130,6 +130,11 @@ sealed class TrackRatDestinations(
      * Advanced Configuration screen - server switching
      */
     data object AdvancedConfig : TrackRatDestinations("advanced_config")
+
+    /**
+     * Onboarding screen - shown on first launch
+     */
+    data object Onboarding : TrackRatDestinations("onboarding")
 }
 
 /**
