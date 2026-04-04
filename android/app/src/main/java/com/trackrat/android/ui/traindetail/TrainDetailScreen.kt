@@ -115,12 +115,13 @@ fun TrainDetailScreen(
             when {
                 uiState.isLoading && uiState.train == null -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.TopCenter
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.padding(top = 32.dp)
                         ) {
                             CircularProgressIndicator(
                                 color = Color(0xFFFF6600)
