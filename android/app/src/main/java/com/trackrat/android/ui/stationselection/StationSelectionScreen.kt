@@ -8,9 +8,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.*
 import androidx.compose.ui.unit.dp
@@ -30,7 +30,6 @@ import com.trackrat.android.ui.map.MapContainerViewModel
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.ui.text.style.TextAlign
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,32 +70,15 @@ fun StationSelectionScreen(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
                 .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Header with Profile button
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Where would you like to leave from?",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.weight(1f)
-                )
-
-                // Profile button
-                IconButton(onClick = onNavigateToProfile) {
-                    Icon(
-                        imageVector = Icons.Default.AccountCircle,
-                        contentDescription = "Profile",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
-            }
+            // Header
+            Text(
+                text = "Where would you like to leave from?",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
 
             // RatSense AI Suggestions
             if (ratSenseSuggestions.isNotEmpty() && searchText.isBlank()) {
@@ -152,28 +134,39 @@ fun StationSelectionScreen(
 
             // Search bar
             GlassmorphicSearchCard(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                padding = 0.dp
             ) {
                 OutlinedTextField(
                     value = searchText,
-                    onValueChange = { 
+                    onValueChange = {
                         searchText = it
                         if (!isTrainSearch) {
                             viewModel.searchStations(it.trim())
                         }
                     },
-                    placeholder = { 
+                    placeholder = {
                         Text(
                             "Search stations or train number",
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-                        ) 
+                        )
                     },
-                    leadingIcon = { 
+                    leadingIcon = {
                         Icon(
-                            Icons.Default.Search, 
+                            Icons.Default.Search,
                             contentDescription = "Search",
                             tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                        ) 
+                        )
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = onNavigateToProfile) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Settings",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
                     },
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = Color.Transparent,
@@ -191,7 +184,7 @@ fun StationSelectionScreen(
             // Train search result or station list
             LazyColumn(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 // If searching for train, show train search card
                 if (isTrainSearch) {
@@ -238,32 +231,25 @@ fun StationSelectionScreen(
                         GlassmorphicCard(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { 
+                                .clickable {
                                     viewModel.selectOrigin(station)
                                     // Navigate to destination selection
                                     onNavigateToDestination(station.code)
-                                }
+                                },
+                            padding = 10.dp
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Column(
+                                Text(
+                                    text = station.name,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                     modifier = Modifier.weight(1f)
-                                ) {
-                                    Text(
-                                        text = station.name,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Medium,
-                                        color = MaterialTheme.colorScheme.onBackground
-                                    )
-                                    Text(
-                                        text = station.code,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                                    )
-                                }
+                                )
                                 // Heart icon for favoriting
                                 val isFavorited by viewModel.isStationFavorited(station.code).collectAsState(initial = false)
                                 IconButton(

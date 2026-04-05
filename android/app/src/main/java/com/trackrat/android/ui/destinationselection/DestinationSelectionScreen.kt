@@ -82,30 +82,31 @@ fun DestinationSelectionScreen(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
                 .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Search bar
             GlassmorphicSearchCard(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                padding = 0.dp
             ) {
                 OutlinedTextField(
                     value = searchText,
-                    onValueChange = { 
+                    onValueChange = {
                         searchText = it
                         viewModel.searchDestinations(it.trim())
                     },
-                    placeholder = { 
+                    placeholder = {
                         Text(
                             "Search destinations...",
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-                        ) 
+                        )
                     },
-                    leadingIcon = { 
+                    leadingIcon = {
                         Icon(
-                            Icons.Default.Search, 
+                            Icons.Default.Search,
                             contentDescription = "Search",
                             tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                        ) 
+                        )
                     },
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = Color.Transparent,
@@ -125,7 +126,7 @@ fun DestinationSelectionScreen(
             // Station list
             LazyColumn(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(availableStations) { station ->
                     GlassmorphicCard(
@@ -140,28 +141,21 @@ fun DestinationSelectionScreen(
                                     mapViewModel.animateToRoute(fromCoords, toCoords)
                                 }
                                 onNavigateToTrains(station.code)
-                            }
+                            },
+                        padding = 10.dp
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column(
+                            Text(
+                                text = station.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 modifier = Modifier.weight(1f)
-                            ) {
-                                Text(
-                                    text = station.name,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Medium,
-                                    color = MaterialTheme.colorScheme.onBackground
-                                )
-                                Text(
-                                    text = station.code,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                                )
-                            }
+                            )
                             // Heart icon for favoriting
                             val isFavorited by viewModel.isStationFavorited(station.code).collectAsState(initial = false)
                             IconButton(
