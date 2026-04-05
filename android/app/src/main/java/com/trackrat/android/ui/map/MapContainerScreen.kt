@@ -175,7 +175,7 @@ fun MapContent(viewModel: MapContainerViewModel, innerPadding: PaddingValues) {
                 Polyline(
                     points = listOf(polyline.fromLatLng, polyline.toLatLng),
                     color = if (isSelected)
-                        androidx.compose.ui.graphics.Color(0xFF007AFF) // iOS blue for selected
+                        Color(0xFF007AFF) // iOS blue for selected
                     else
                         polyline.color, // Normal congestion color
                     width = if (isSelected) 9f else polyline.width, // Thicker when selected
@@ -187,7 +187,7 @@ fun MapContent(viewModel: MapContainerViewModel, innerPadding: PaddingValues) {
             selectedRoute?.let { route ->
                 Polyline(
                     points = listOf(route.fromLatLng, route.toLatLng),
-                    color = androidx.compose.ui.graphics.Color(0xFF007AFF), // iOS blue
+                    color = Color(0xFF007AFF), // iOS blue
                     width = 7f,
                     zIndex = 10f // Above congestion overlays
                 )

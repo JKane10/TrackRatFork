@@ -109,7 +109,7 @@ fun SegmentedTrackPredictionBar(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        sortedPlatforms.forEach { (platform, probability) ->
+                        sortedPlatforms.forEach { (_, probability) ->
                             // Only show percentages for segments >= 15%
                             if (probability >= 0.15) {
                                 Text(

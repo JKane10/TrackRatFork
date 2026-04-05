@@ -1,28 +1,23 @@
 package com.trackrat.android.ui.destinationselection
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.trackrat.android.data.Stations
-import com.trackrat.android.data.models.Station
 import com.trackrat.android.ui.components.GlassmorphicCard
 import com.trackrat.android.ui.components.GlassmorphicSearchCard
 import com.trackrat.android.ui.map.MapContainerViewModel
@@ -40,7 +35,6 @@ fun DestinationSelectionScreen(
 ) {
     val scope = rememberCoroutineScope()
     val displayedStations by viewModel.displayedDestinationStations.collectAsState()
-    val selectedDestination by viewModel.selectedDestination.collectAsState()
     var searchText by remember { mutableStateOf("") }
 
     // Filter out origin station from available destinations
@@ -49,7 +43,7 @@ fun DestinationSelectionScreen(
     }
 
     Scaffold(
-        modifier = Modifier.background(MaterialTheme.colorScheme.background),
+        containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
                 title = {
@@ -57,21 +51,20 @@ fun DestinationSelectionScreen(
                         text = "Where would you like to go?",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            Icons.Default.ArrowBack,
+                            Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = Color.Transparent
                 )
             )
         }
@@ -79,7 +72,6 @@ fun DestinationSelectionScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)

@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,9 +28,9 @@ import com.trackrat.android.utils.Constants
 @Composable
 private fun shimmerBrush(): Brush {
     val shimmerColors = listOf(
-        MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-        MaterialTheme.colorScheme.surface.copy(alpha = 0.2f),
-        MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+        Color.White.copy(alpha = 0.12f),
+        Color.White.copy(alpha = 0.25f),
+        Color.White.copy(alpha = 0.12f),
     )
     
     val transition = rememberInfiniteTransition(label = "shimmer")
@@ -69,108 +67,45 @@ private fun ShimmerBox(
 }
 
 /**
- * Train card loading skeleton
+ * Train card loading skeleton — mirrors the compact single-row TrainCardContent layout.
  */
 @Composable
 fun TrainCardSkeleton(
     modifier: Modifier = Modifier
 ) {
-    Card(
+    GlassmorphicCard(
         modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = Constants.CARD_ELEVATION_DP.dp)
+        cornerRadius = 12.dp,
+        padding = 10.dp
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Constants.PADDING_MEDIUM_DP.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Header: Train number, line, destination
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
+            // Left: train number + destination
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Train number
-                        ShimmerBox(
-                            modifier = Modifier
-                                .width(80.dp)
-                                .height(24.dp)
-                        )
-                        // Line code
-                        ShimmerBox(
-                            modifier = Modifier
-                                .width(40.dp)
-                                .height(20.dp)
-                        )
-                    }
-                    
-                    Spacer(modifier = Modifier.height(4.dp))
-                    
-                    // Destination
-                    ShimmerBox(
-                        modifier = Modifier
-                            .width(120.dp)
-                            .height(16.dp)
-                    )
-                }
-                
-                // Status chip
-                ShimmerBox(
-                    modifier = Modifier
-                        .width(60.dp)
-                        .height(24.dp),
-                    cornerRadius = Constants.BORDER_RADIUS_LARGE_DP
-                )
+                ShimmerBox(modifier = Modifier.width(80.dp).height(18.dp))
+                ShimmerBox(modifier = Modifier.width(120.dp).height(13.dp))
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Departure time and track
+            // Right: time range + track chip + status chip
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    // "Departure" label
-                    ShimmerBox(
-                        modifier = Modifier
-                            .width(60.dp)
-                            .height(12.dp)
-                    )
-                    
-                    Spacer(modifier = Modifier.height(4.dp))
-                    
-                    // Time
-                    ShimmerBox(
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(20.dp)
-                    )
-                }
-
-                // Track or prediction
-                Column(horizontalAlignment = Alignment.End) {
-                    ShimmerBox(
-                        modifier = Modifier
-                            .width(40.dp)
-                            .height(12.dp)
-                    )
-                    
-                    Spacer(modifier = Modifier.height(4.dp))
-                    
-                    ShimmerBox(
-                        modifier = Modifier
-                            .width(60.dp)
-                            .height(24.dp),
-                        cornerRadius = Constants.BORDER_RADIUS_MEDIUM_DP
-                    )
-                }
+                ShimmerBox(modifier = Modifier.width(110.dp).height(16.dp))
+                ShimmerBox(
+                    modifier = Modifier.width(36.dp).height(20.dp),
+                    cornerRadius = 6
+                )
+                ShimmerBox(
+                    modifier = Modifier.width(56.dp).height(20.dp),
+                    cornerRadius = Constants.BORDER_RADIUS_LARGE_DP
+                )
             }
         }
     }

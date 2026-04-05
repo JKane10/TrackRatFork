@@ -5,31 +5,24 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Circle
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.DirectionsRailway
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.trackrat.android.data.models.StopDetail
-import com.trackrat.android.data.models.TrainDetailV2
+import com.trackrat.android.ui.components.GlassmorphicCard
 import com.trackrat.android.ui.trainlist.Tuple4
+import com.trackrat.android.utils.Constants
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,30 +36,16 @@ fun TrainDetailScreen(
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val pullToRefreshState = rememberPullToRefreshState()
 
     // Load train details when screen opens and save origin/destination codes
     LaunchedEffect(trainId, date, originCode, destinationCode) {
-        // Save origin/destination codes to ViewModel for tracking
         originCode?.let { viewModel.setOriginCode(it) }
         destinationCode?.let { viewModel.setDestinationCode(it) }
         viewModel.loadTrainDetails(trainId, date)
     }
-    
-    // Handle pull to refresh
-    if (pullToRefreshState.isRefreshing) {
-        LaunchedEffect(true) {
-            viewModel.refresh()
-        }
-    }
-    
-    LaunchedEffect(uiState.isRefreshing) {
-        if (!uiState.isRefreshing) {
-            pullToRefreshState.endRefresh()
-        }
-    }
 
     Scaffold(
+        containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
                 title = {
@@ -87,7 +66,7 @@ fun TrainDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
@@ -101,17 +80,12 @@ fun TrainDetailScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black
+                    containerColor = Color.Transparent
                 )
             )
         }
     ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .nestedScroll(pullToRefreshState.nestedScrollConnection)
-        ) {
+        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             when {
                 uiState.isLoading && uiState.train == null -> {
                     Box(
@@ -252,11 +226,6 @@ fun TrainDetailScreen(
                     }
                 }
             }
-            
-            PullToRefreshContainer(
-                modifier = Modifier.align(Alignment.TopCenter),
-                state = pullToRefreshState,
-            )
         }
     }
 }
@@ -270,21 +239,17 @@ fun StopCard(
     isOrigin: Boolean = false,
     isTerminal: Boolean = false
 ) {
-    Card(
+    GlassmorphicCard(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = when {
-                isOrigin -> Color(0xFFFF6600).copy(alpha = 0.1f)
-                isTerminal -> MaterialTheme.colorScheme.secondaryContainer
-                else -> MaterialTheme.colorScheme.surface
-            }
-        )
+        backgroundColor = when {
+            isOrigin -> Color(Constants.BRAND_ORANGE).copy(alpha = 0.15f)
+            isTerminal -> Color.White.copy(alpha = 0.12f)
+            else -> Color.White.copy(alpha = 0.08f)
+        },
+        padding = 10.dp
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {

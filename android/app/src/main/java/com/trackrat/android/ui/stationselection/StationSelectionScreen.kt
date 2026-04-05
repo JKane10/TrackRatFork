@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
@@ -17,12 +16,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.trackrat.android.data.models.Station
 import com.trackrat.android.ui.components.GlassmorphicCard
 import com.trackrat.android.ui.components.GlassmorphicCardElevated
 import com.trackrat.android.ui.components.GlassmorphicSearchCard
@@ -41,7 +37,6 @@ fun StationSelectionScreen(
     onNavigateToProfile: () -> Unit = {}
 ) {
     val departureStations by viewModel.displayedDepartureStations.collectAsState()
-    val selectedOrigin by viewModel.selectedOrigin.collectAsState()
     val ratSenseSuggestions by viewModel.ratSenseSuggestions.collectAsState()
     var searchText by remember { mutableStateOf("") }
 
@@ -62,12 +57,11 @@ fun StationSelectionScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        modifier = Modifier.background(MaterialTheme.colorScheme.background)
+        containerColor = Color.Transparent
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
