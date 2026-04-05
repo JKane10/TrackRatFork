@@ -107,7 +107,7 @@ fun MapContainerScreen(
             MaterialTheme(
                 colorScheme = MaterialTheme.colorScheme.copy(background = Color.Transparent)
             ) {
-                StationSelectionContent(mainNavController, sheetNavController, viewModel, isExpanded)
+                StationSelectionContent(mainNavController, sheetNavController, viewModel)
             }
         },
         sheetPeekHeight = LocalConfiguration.current.screenHeightDp.dp / 2,
@@ -200,8 +200,7 @@ fun MapContent(viewModel: MapContainerViewModel, innerPadding: PaddingValues) {
 fun StationSelectionContent(
     mainNavController: NavHostController,
     sheetNavController: NavHostController,
-    viewModel: MapContainerViewModel,
-    isExpanded: Boolean
+    viewModel: MapContainerViewModel
 ) {
     // Navigation content within sheet
     NavHost(
@@ -275,8 +274,7 @@ fun StationSelectionContent(
                     sheetNavController.navigate(
                         "train_details/$trainId/$today?from=$fromStation&to=$toStation"
                     )
-                },
-                isExpanded = isExpanded
+                }
             )
         }
 

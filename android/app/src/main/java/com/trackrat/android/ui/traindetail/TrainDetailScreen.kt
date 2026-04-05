@@ -1,5 +1,6 @@
 package com.trackrat.android.ui.traindetail
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -409,6 +410,7 @@ private fun formatTime(timeString: String): String {
             timeString
         }
     } catch (e: Exception) {
+        Log.e(null, e.message.toString())
         timeString
     }
 }
