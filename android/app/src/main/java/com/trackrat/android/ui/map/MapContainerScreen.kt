@@ -1,13 +1,19 @@
 package com.trackrat.android.ui.map
 
 import android.net.Uri
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -50,6 +56,15 @@ fun MapContainerScreen(
 ) {
     // Navigation controller for content within the bottom sheet
     val sheetNavController = rememberNavController()
+    val scaffoldState = rememberBottomSheetScaffoldState()
+
+    // Animate sheet background: transparent when peeked, opaque when fully expanded
+    val isExpanded = scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded
+    val sheetAlpha by animateFloatAsState(
+        targetValue = if (isExpanded) 1f else 0f,
+        animationSpec = tween(durationMillis = 300),
+        label = "sheet_alpha"
+    )
 
     // Handle deep link navigation
     LaunchedEffect(deepLinkUri) {
@@ -85,13 +100,22 @@ fun MapContainerScreen(
     }
 
     BottomSheetScaffold(
-        sheetContent = { StationSelectionContent(mainNavController, sheetNavController, viewModel) },
-        sheetPeekHeight = LocalConfiguration.current.screenHeightDp.dp / 2
-    ) { innerPadding ->
-        MapContent(
-            viewModel,
-            innerPadding
-        )
+        scaffoldState = scaffoldState,
+        sheetContent = {
+            // Override background to transparent so individual screens don't paint over
+            // the animated sheet container color
+            MaterialTheme(
+                colorScheme = MaterialTheme.colorScheme.copy(background = Color.Transparent)
+            ) {
+                StationSelectionContent(mainNavController, sheetNavController, viewModel, isExpanded)
+            }
+        },
+        sheetPeekHeight = LocalConfiguration.current.screenHeightDp.dp / 2,
+        sheetContainerColor = Color.Black.copy(alpha = 0.5f + 0.25f * sheetAlpha),
+        sheetShadowElevation = 0.dp,
+    ) { _ ->
+        // Map fills the full screen, visible behind the transparent peeked sheet
+        MapContent(viewModel, PaddingValues(0.dp))
     }
 }
 
@@ -176,7 +200,8 @@ fun MapContent(viewModel: MapContainerViewModel, innerPadding: PaddingValues) {
 fun StationSelectionContent(
     mainNavController: NavHostController,
     sheetNavController: NavHostController,
-    viewModel: MapContainerViewModel
+    viewModel: MapContainerViewModel,
+    isExpanded: Boolean
 ) {
     // Navigation content within sheet
     NavHost(
@@ -250,7 +275,8 @@ fun StationSelectionContent(
                     sheetNavController.navigate(
                         "train_details/$trainId/$today?from=$fromStation&to=$toStation"
                     )
-                }
+                },
+                isExpanded = isExpanded
             )
         }
 

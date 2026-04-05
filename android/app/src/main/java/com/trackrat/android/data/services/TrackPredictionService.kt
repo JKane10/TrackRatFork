@@ -2,7 +2,6 @@ package com.trackrat.android.data.services
 
 import android.util.Log
 import com.trackrat.android.data.api.TrackRatApiService
-import com.trackrat.android.data.models.PlatformPrediction
 import com.trackrat.android.data.models.TrainDetailV2
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -84,13 +83,12 @@ class TrackPredictionService @Inject constructor(
             Log.d(TAG, "   - Confidence: ${platformPrediction.confidence}")
             Log.d(TAG, "   - Top 3: ${platformPrediction.top3}")
 
-            // Convert platform predictions to track probabilities
-            val trackProbabilities = platformPrediction.convertToTrackProbabilities()
+            // Use platform probabilities directly — the backend already returns them keyed
+            // by platform name (e.g. "1 & 2"), which is exactly what the UI needs.
+            val platformProbabilities = platformPrediction.platformProbabilities
+                .mapValues { it.value.toDouble() }
 
-            // Group tracks back into platforms for display
-            val platformProbabilities = groupTracksByPlatform(trackProbabilities)
-
-            Log.d(TAG, "🎯 Converted to ${platformProbabilities.size} platform probabilities")
+            Log.d(TAG, "🎯 Got ${platformProbabilities.size} platform probabilities")
             platformProbabilities.entries.sortedByDescending { it.value }.take(3).forEach { (platform, prob) ->
                 Log.d(TAG, "   - Platform $platform: ${String.format("%.1f%%", prob * 100)}")
             }
@@ -103,36 +101,5 @@ class TrackPredictionService @Inject constructor(
             // If API fails, don't show predictions
             null
         }
-    }
-
-    /**
-     * Groups individual track probabilities by shared platforms
-     * Platforms that share the same physical location are combined
-     */
-    private fun groupTracksByPlatform(trackProbabilities: Map<String, Double>): Map<String, Double> {
-        val platformGroups = mapOf(
-            "1 & 2" to listOf("1", "2"),
-            "3 & 4" to listOf("3", "4"),
-            "5 & 6" to listOf("5", "6"),
-            "7 & 8" to listOf("7", "8"),
-            "9 & 10" to listOf("9", "10"),
-            "11 & 12" to listOf("11", "12"),
-            "13 & 14" to listOf("13", "14"),
-            "15 & 16" to listOf("15", "16"),
-            "17" to listOf("17"),
-            "18 & 19" to listOf("18", "19"),
-            "20 & 21" to listOf("20", "21")
-        )
-
-        val platformProbabilities = mutableMapOf<String, Double>()
-
-        for ((platformName, tracks) in platformGroups) {
-            val totalProbability = tracks.mapNotNull { trackProbabilities[it] }.sum()
-            if (totalProbability > 0) {
-                platformProbabilities[platformName] = totalProbability
-            }
-        }
-
-        return platformProbabilities
     }
 }

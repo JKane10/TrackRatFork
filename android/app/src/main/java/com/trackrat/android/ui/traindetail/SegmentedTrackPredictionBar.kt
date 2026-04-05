@@ -116,7 +116,7 @@ fun SegmentedTrackPredictionBar(
                                     text = "${(probability * 100).toInt()}%",
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Medium,
-                                    color = Color.Black,
+                                    color = Color.White,
                                     modifier = Modifier.weight(probability.toFloat())
                                 )
                             } else {

@@ -1,5 +1,7 @@
 package com.trackrat.android.ui.trainlist
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,6 +16,7 @@ import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.trackrat.android.data.models.TrainV2
+import com.trackrat.android.data.repository.TrackRatRepository
 import com.trackrat.android.ui.components.ErrorContent
 import com.trackrat.android.ui.components.GlassmorphicCard
 import com.trackrat.android.ui.components.TrainListSkeleton
@@ -42,7 +46,8 @@ fun TrainListScreen(
     toStation: String?,
     viewModel: TrainListViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
-    onTrainClicked: (String) -> Unit
+    onTrainClicked: (String) -> Unit,
+    isExpanded: Boolean
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val pullToRefreshState = rememberPullToRefreshState()
@@ -78,6 +83,12 @@ fun TrainListScreen(
             HapticFeedbackHelper.performRefreshHaptic(context, uiState.hapticFeedbackEnabled)
         }
     }
+
+    val sheetAlpha by animateFloatAsState(
+        targetValue = if (isExpanded) 1f else 0f,
+        animationSpec = tween(durationMillis = 300),
+        label = "sheet_alpha"
+    )
 
     Scaffold(
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
@@ -123,7 +134,7 @@ fun TrainListScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black
+                    containerColor = Color.Black.copy(alpha = 0.5f + 0.25f * sheetAlpha),
                 )
             )
         }
@@ -493,13 +504,13 @@ private fun formatLastUpdated(timestamp: Long): String {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun TrainListScreenPreview() {
-    TrainListScreen(
-        fromStation = "NY",
-        toStation = "NP",
-        onNavigateBack = {},
-        onTrainClicked = {}
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun TrainListScreenPreview() {
+//    TrainListScreen(
+//        fromStation = "NY",
+//        toStation = "NP",
+//        onNavigateBack = {},
+//        onTrainClicked = {}
+//    )
+//}
