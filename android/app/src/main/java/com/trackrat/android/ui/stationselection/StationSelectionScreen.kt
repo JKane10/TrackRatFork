@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Train
@@ -37,6 +38,7 @@ fun StationSelectionScreen(
 ) {
     val departureStations by viewModel.displayedDepartureStations.collectAsState()
     val ratSenseSuggestions by viewModel.ratSenseSuggestions.collectAsState()
+    val primaryDepartureCode by viewModel.primaryDepartureCode.collectAsState()
     var searchText by remember { mutableStateOf("") }
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -243,6 +245,15 @@ fun StationSelectionScreen(
                                     color = MaterialTheme.colorScheme.onBackground,
                                     modifier = Modifier.weight(1f)
                                 )
+                                if (station.code == primaryDepartureCode) {
+                                    Icon(
+                                        imageVector = Icons.Default.Home,
+                                        contentDescription = "Primary departure station",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(Modifier.width(4.dp))
+                                }
                                 // Heart icon for favoriting
                                 val isFavorited by viewModel.isStationFavorited(station.code).collectAsState(initial = false)
                                 IconButton(

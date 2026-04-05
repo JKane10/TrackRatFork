@@ -133,7 +133,7 @@ fun TrainListScreen(
                 
                 uiState.trains.isEmpty() -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(

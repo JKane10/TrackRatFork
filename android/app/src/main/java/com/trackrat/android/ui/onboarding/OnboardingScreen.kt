@@ -14,7 +14,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Work
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -99,6 +102,7 @@ fun OnboardingScreen(
                         }
                     )
                     1 -> StationPickerPage(
+                        icon = Icons.Default.Home,
                         title = "Primary Departure Station",
                         subtitle = "Where do you typically start your journey?",
                         selectedStation = primaryDeparture,
@@ -110,6 +114,7 @@ fun OnboardingScreen(
                         onSearch = { viewModel.searchDepartureStations(it) }
                     )
                     2 -> StationPickerPage(
+                        icon = Icons.Default.Work,
                         title = "Primary Destination Station",
                         subtitle = "Where do you typically travel to?",
                         selectedStation = primaryDestination,
@@ -309,6 +314,7 @@ private fun SystemCard(
 
 @Composable
 private fun StationPickerPage(
+    icon: ImageVector,
     title: String,
     subtitle: String,
     selectedStation: Station?,
@@ -332,6 +338,17 @@ private fun StationPickerPage(
             .padding(horizontal = 24.dp)
     ) {
         Spacer(Modifier.height(24.dp))
+
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .size(48.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(Modifier.height(12.dp))
 
         Text(
             text = title,
@@ -381,7 +398,7 @@ private fun StationPickerPage(
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                imageVector = Icons.Default.Check,
+                                imageVector = icon,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)

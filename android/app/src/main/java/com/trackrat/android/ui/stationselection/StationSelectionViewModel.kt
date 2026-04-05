@@ -55,6 +55,14 @@ class StationSelectionViewModel @Inject constructor(
     // User preferences including favorite stations
     private val userPreferences = userPreferencesRepository.userPreferencesFlow
 
+    val primaryDepartureCode: StateFlow<String?> = userPreferences
+        .map { it.primaryDepartureStation }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    val primaryDestinationCode: StateFlow<String?> = userPreferences
+        .map { it.primaryDestinationStation }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
     /**
      * Stations to display on the departure selection screen.
      * Order (when not searching):

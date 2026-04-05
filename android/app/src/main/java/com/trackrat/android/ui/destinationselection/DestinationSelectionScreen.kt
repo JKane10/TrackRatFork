@@ -6,9 +6,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -35,6 +36,7 @@ fun DestinationSelectionScreen(
 ) {
     val scope = rememberCoroutineScope()
     val displayedStations by viewModel.displayedDestinationStations.collectAsState()
+    val primaryDestinationCode by viewModel.primaryDestinationCode.collectAsState()
     var searchText by remember { mutableStateOf("") }
 
     // Filter out origin station from available destinations
@@ -148,6 +150,15 @@ fun DestinationSelectionScreen(
                                 color = MaterialTheme.colorScheme.onBackground,
                                 modifier = Modifier.weight(1f)
                             )
+                            if (station.code == primaryDestinationCode) {
+                                Icon(
+                                    imageVector = Icons.Default.Work,
+                                    contentDescription = "Primary destination station",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(Modifier.width(4.dp))
+                            }
                             // Heart icon for favoriting
                             val isFavorited by viewModel.isStationFavorited(station.code).collectAsState(initial = false)
                             IconButton(
