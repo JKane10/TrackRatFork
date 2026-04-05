@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
@@ -75,7 +77,10 @@ fun OnboardingScreen(
                                 pagerState.animateScrollToPage(pagerState.currentPage - 1)
                             }
                         }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
                         }
                     }
                 }
@@ -101,6 +106,7 @@ fun OnboardingScreen(
                             scope.launch { pagerState.animateScrollToPage(1) }
                         }
                     )
+
                     1 -> StationPickerPage(
                         icon = Icons.Default.Home,
                         title = "Primary Departure Station",
@@ -113,6 +119,7 @@ fun OnboardingScreen(
                         onStationCleared = { viewModel.clearPrimaryDeparture() },
                         onSearch = { viewModel.searchDepartureStations(it) }
                     )
+
                     2 -> StationPickerPage(
                         icon = Icons.Default.Work,
                         title = "Primary Destination Station",
@@ -166,7 +173,7 @@ fun OnboardingScreen(
                     }
                 ) {
                     Icon(
-                        imageVector = if (pagerState.currentPage < 2) Icons.Default.ArrowForward else Icons.Default.Check,
+                        imageVector = if (pagerState.currentPage < 2) Icons.AutoMirrored.Filled.ArrowForward else Icons.Default.Check,
                         contentDescription = null
                     )
                     Spacer(Modifier.width(8.dp))
@@ -327,10 +334,11 @@ private fun StationPickerPage(
 ) {
     var searchText by remember { mutableStateOf("") }
 
-    val displayedStations = remember(searchResults, defaultStations, excludeStation, selectedStation) {
-        val base = if (searchResults.isNotEmpty()) searchResults else defaultStations
-        base.filter { it.code != excludeStation?.code }
-    }
+    val displayedStations =
+        remember(searchResults, defaultStations, excludeStation, selectedStation) {
+            val base = if (searchResults.isNotEmpty()) searchResults else defaultStations
+            base.filter { it.code != excludeStation?.code }
+        }
 
     Column(
         modifier = Modifier
