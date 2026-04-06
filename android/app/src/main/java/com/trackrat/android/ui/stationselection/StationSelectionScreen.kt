@@ -250,7 +250,7 @@ fun StationSelectionScreen(
                                         imageVector = Icons.Default.Home,
                                         contentDescription = "Primary departure station",
                                         tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(18.dp)
+                                        modifier = Modifier.size(24.dp)
                                     )
                                     Spacer(Modifier.width(4.dp))
                                 }

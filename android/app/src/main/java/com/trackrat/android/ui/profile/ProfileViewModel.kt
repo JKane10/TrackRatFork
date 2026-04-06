@@ -7,6 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trackrat.android.data.preferences.EnvironmentManager
 import com.trackrat.android.data.models.ServerEnvironment
+import com.trackrat.android.data.models.Station
+import com.trackrat.android.data.models.Stations
+import com.trackrat.android.data.preferences.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -19,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val application: Application,
-    private val environmentManager: EnvironmentManager
+    private val environmentManager: EnvironmentManager,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     data class UiState(
@@ -41,6 +45,31 @@ class ProfileViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = UiState()
     )
+
+    val primaryDepartureStation: StateFlow<Station?> =
+        userPreferencesRepository.userPreferencesFlow
+            .map { prefs -> prefs.primaryDepartureStation?.let { Stations.getStation(it) } }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    val primaryDestinationStation: StateFlow<Station?> =
+        userPreferencesRepository.userPreferencesFlow
+            .map { prefs -> prefs.primaryDestinationStation?.let { Stations.getStation(it) } }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    fun setPrimaryDeparture(stationCode: String?) {
+        viewModelScope.launch {
+            userPreferencesRepository.setPrimaryDepartureStation(stationCode)
+        }
+    }
+
+    fun setPrimaryDestination(stationCode: String?) {
+        viewModelScope.launch {
+            userPreferencesRepository.setPrimaryDestinationStation(stationCode)
+        }
+    }
+
+    fun searchStations(query: String): List<Station> =
+        if (query.isBlank()) Stations.ALL_STATIONS else Stations.search(query)
 
     /**
      * Open Signal support group
