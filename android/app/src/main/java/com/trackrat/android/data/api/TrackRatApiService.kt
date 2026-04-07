@@ -1,6 +1,7 @@
 package com.trackrat.android.data.api
 
 import com.trackrat.android.data.models.DeparturesResponse
+import com.trackrat.android.data.models.OperationsSummaryResponse
 import com.trackrat.android.data.models.TrainDetailsResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -59,6 +60,23 @@ interface TrackRatApiService {
         @Query("time_window_hours") timeWindowHours: Int = 3,
         @Query("max_per_segment") maxPerSegment: Int = 200
     ): com.trackrat.android.data.models.CongestionResponse
+
+    /**
+     * Get operations summary for a route, network, or train
+     * @param scope Summary scope: "network", "route", or "train"
+     * @param fromStation Origin station code (required for route scope)
+     * @param toStation Destination station code (required for route scope)
+     * @param trainId Train ID (required for train scope)
+     * @param dataSource Optional data source filter
+     */
+    @GET("routes/summary")
+    suspend fun getOperationsSummary(
+        @Query("scope") scope: String,
+        @Query("from_station") fromStation: String? = null,
+        @Query("to_station") toStation: String? = null,
+        @Query("train_id") trainId: String? = null,
+        @Query("data_source") dataSource: String? = null
+    ): OperationsSummaryResponse
 
     /**
      * Health check endpoint

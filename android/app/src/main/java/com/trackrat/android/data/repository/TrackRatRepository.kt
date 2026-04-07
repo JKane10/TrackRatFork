@@ -4,6 +4,7 @@ import com.trackrat.android.data.api.TrackRatApiService
 import com.trackrat.android.data.models.ApiResult
 import com.trackrat.android.data.models.DepartureV2
 import com.trackrat.android.data.models.DeparturesResponse
+import com.trackrat.android.data.models.OperationsSummaryResponse
 import com.trackrat.android.data.models.TrainDetailsResponse
 import com.trackrat.android.data.models.safeApiCall
 import kotlinx.coroutines.delay
@@ -78,6 +79,22 @@ class TrackRatRepository @Inject constructor(
         emit(getDepartures(from, to, limit))
     }
     
+    /**
+     * Get operations summary for a route
+     * @param scope Summary scope: "route", "network", or "train"
+     * @param fromStation Origin station code (required for route scope)
+     * @param toStation Destination station code (required for route scope)
+     */
+    suspend fun getOperationsSummary(
+        scope: String = "route",
+        fromStation: String? = null,
+        toStation: String? = null
+    ): ApiResult<OperationsSummaryResponse> {
+        return executeWithRetry {
+            apiService.getOperationsSummary(scope, fromStation, toStation)
+        }
+    }
+
     /**
      * Search for trains by train number with improved efficiency
      * Uses targeted search instead of loading all departures

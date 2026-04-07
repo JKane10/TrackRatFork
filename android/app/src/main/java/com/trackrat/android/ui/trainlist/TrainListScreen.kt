@@ -24,6 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.trackrat.android.data.models.TrainV2
 import com.trackrat.android.ui.components.ErrorContent
 import com.trackrat.android.ui.components.GlassmorphicCard
+import com.trackrat.android.ui.components.OperationsSummaryCard
 import com.trackrat.android.ui.components.TrainListSkeleton
 import com.trackrat.android.utils.Constants
 import com.trackrat.android.utils.HapticFeedbackHelper
@@ -176,6 +177,14 @@ fun TrainListScreen(
                                     modifier = Modifier.padding(bottom = 8.dp)
                                 )
                             }
+                        }
+
+                        // Operations summary (route reliability)
+                        item {
+                            OperationsSummaryCard(
+                                summary = uiState.operationsSummary,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
                         }
                         
                         items(uiState.trains) { train ->

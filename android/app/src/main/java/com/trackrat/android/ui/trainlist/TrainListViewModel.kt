@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.trackrat.android.data.models.ApiException
 import com.trackrat.android.data.models.ApiResult
 import com.trackrat.android.data.models.DepartureV2
+import com.trackrat.android.data.models.OperationsSummaryResponse
 import com.trackrat.android.data.models.TrainV2
 import com.trackrat.android.data.preferences.UserPreferencesRepository
 import com.trackrat.android.data.repository.TrackRatRepository
@@ -57,7 +58,8 @@ class TrainListViewModel @Inject constructor(
         val lastUpdated: Long = 0L,
         val canRetry: Boolean = false,
         val autoRefreshEnabled: Boolean = true,
-        val hapticFeedbackEnabled: Boolean = true
+        val hapticFeedbackEnabled: Boolean = true,
+        val operationsSummary: OperationsSummaryResponse? = null
     )
 
     private val _uiState = MutableStateFlow(UiState())
@@ -105,8 +107,9 @@ class TrainListViewModel @Inject constructor(
                 canRetry = false
             )
             
-            // Fetch trains
+            // Fetch trains and operations summary in parallel
             fetchTrains(fromStation, toStation)
+            fetchOperationsSummary(fromStation, toStation)
         }
     }
 
@@ -191,6 +194,33 @@ class TrainListViewModel @Inject constructor(
             is ApiResult.Loading -> {
                 // Should not happen with current implementation
                 // but handle gracefully if API changes
+            }
+        }
+    }
+
+    /**
+     * Fetch operations summary for the current route.
+     * Fails silently — the summary card simply won't appear if this errors.
+     */
+    private fun fetchOperationsSummary(fromStation: String, toStation: String?) {
+        viewModelScope.launch {
+            when (val result = repository.getOperationsSummary(
+                scope = "route",
+                fromStation = fromStation,
+                toStation = toStation
+            )) {
+                is ApiResult.Success -> {
+                    _uiState.value = _uiState.value.copy(
+                        operationsSummary = result.data
+                    )
+                }
+                is ApiResult.Error -> {
+                    // Non-critical — just hide the summary card
+                    _uiState.value = _uiState.value.copy(
+                        operationsSummary = null
+                    )
+                }
+                is ApiResult.Loading -> { /* no-op */ }
             }
         }
     }
