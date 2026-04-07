@@ -1,3 +1,140 @@
 <resources>
     <string name="app_name">TrackRat</string>
+
+    <!-- Common -->
+    <string name="back">Back</string>
+    <string name="search">Search</string>
+    <string name="settings">Settings</string>
+    <string name="selected">Selected</string>
+    <string name="clear">Clear</string>
+    <string name="clear_selection">Clear selection</string>
+    <string name="clear_search">Clear search</string>
+    <string name="refresh">Refresh</string>
+    <string name="try_again">Try Again</string>
+    <string name="not_set">Not set</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="beta">beta</string>
+
+    <!-- Time formatting -->
+    <string name="updated_time">Updated %1$s</string>
+    <string name="just_now">just now</string>
+    <string name="minutes_ago">%1$d min ago</string>
+    <string name="hours_ago">%1$d hr ago</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome">Welcome to TrackRat</string>
+    <string name="onboarding_transit_system_question">Which transit system\ndo you use the most?</string>
+    <string name="onboarding_change_later">You can always change this later</string>
+    <string name="onboarding_hide_additional">▲  Hide Additional Systems</string>
+    <string name="onboarding_show_additional">▼  Additional Systems</string>
+    <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_primary_departure">Primary Departure Station</string>
+    <string name="onboarding_departure_subtitle">Where do you typically start your journey?</string>
+    <string name="onboarding_primary_destination">Primary Destination Station</string>
+    <string name="onboarding_destination_subtitle">Where do you typically travel to?</string>
+    <string name="onboarding_search_stations">Search stations</string>
+
+    <!-- Station Selection -->
+    <string name="station_selection_header">Where would you like to leave from?</string>
+    <string name="station_selection_ratsense">RatSense Suggestions</string>
+    <string name="station_selection_suggested">Suggested</string>
+    <string name="station_selection_search_hint">Search stations or train number</string>
+    <string name="station_selection_train_number">Train %1$s</string>
+    <string name="station_selection_amtrak_train">Amtrak Train</string>
+    <string name="station_selection_njt_train">NJ Transit Train</string>
+    <string name="station_selection_train_icon">Train</string>
+    <string name="station_selection_primary_departure">Primary departure station</string>
+    <string name="station_selection_remove_favorite">Remove from favorites</string>
+    <string name="station_selection_add_favorite">Add to favorites</string>
+
+    <!-- Destination Selection -->
+    <string name="destination_selection_header">Where would you like to go?</string>
+    <string name="destination_selection_search_hint">Search destinations…</string>
+    <string name="destination_selection_primary">Primary destination station</string>
+    <string name="destination_selection_no_match">No stations found matching \"%1$s\"</string>
+    <string name="destination_selection_no_stations">No stations available</string>
+
+    <!-- Train List -->
+    <string name="train_list_trains_to">Trains to %1$s</string>
+    <string name="train_list_all_departures">All Departures</string>
+    <string name="train_list_from">From %1$s</string>
+    <string name="train_list_no_trains">No Trains Found</string>
+    <string name="train_list_no_trains_subtitle">There are currently no trains scheduled for this route.</string>
+    <string name="train_list_train_id">Train %1$s</string>
+    <string name="train_list_to_destination">to %1$s</string>
+    <string name="train_list_track">Tr %1$s</string>
+    <string name="train_list_time_na">N/A</string>
+
+    <!-- Train Detail -->
+    <string name="train_detail_title">Train %1$s</string>
+    <string name="train_detail_route">%1$s → %2$s</string>
+    <string name="train_detail_loading">Loading train details…</string>
+    <string name="train_detail_error_title">Error Loading Train</string>
+    <string name="train_detail_unknown_error">Unknown error occurred</string>
+    <string name="train_detail_not_found">Train Not Found</string>
+    <string name="train_detail_not_found_subtitle">This train may not be running today or the information is not available.</string>
+    <string name="train_detail_journey_stops">Journey Stops</string>
+    <string name="train_detail_arrival">arr %1$s</string>
+    <string name="train_detail_track">Track %1$s</string>
+
+    <!-- Track Predictions -->
+    <string name="predictions_title">Track Predictions</string>
+    <string name="predictions_no_clear_favorite">No clear favorite</string>
+    <string name="predictions_percentage">%1$d%%</string>
+    <string name="predictions_no_data">No prediction data available</string>
+    <string name="predictions_tracks_label">Tracks</string>
+
+    <!-- Profile / Settings -->
+    <string name="profile_favorite_stations">Favorite Stations</string>
+    <string name="profile_add_favorite">Add Favorite Station</string>
+    <string name="profile_support">Support</string>
+    <string name="profile_report_issues">Report Issues</string>
+    <string name="profile_report_subtitle">Send new ideas too!</string>
+    <string name="profile_community">Community</string>
+    <string name="profile_youtube">YouTube Channel</string>
+    <string name="profile_instagram">Instagram</string>
+    <string name="profile_settings_section">Settings</string>
+    <string name="profile_advanced_config">Advanced Configuration</string>
+    <string name="profile_set_home_station">Set Home Station</string>
+    <string name="profile_set_work_station">Set Work Station</string>
+    <string name="profile_search_stations">Search stations</string>
+
+    <!-- Favorite Stations -->
+    <string name="favorites_title">Favorite Stations</string>
+    <string name="favorites_empty_title">No favorite stations yet</string>
+    <string name="favorites_empty_subtitle">Tap the heart icon on station list to add favorites</string>
+    <string name="favorites_station_code">Station Code: %1$s</string>
+    <string name="favorites_remove">Remove from favorites</string>
+
+    <!-- Advanced Config -->
+    <string name="advanced_config_title">Advanced Configuration</string>
+    <string name="advanced_config_backend_server">Backend Server</string>
+    <string name="advanced_config_backend_desc">Choose which backend server to connect to. Production is recommended for normal use.</string>
+    <string name="advanced_config_save">Save Changes</string>
+    <string name="advanced_config_health_title">Backend Server Health</string>
+    <string name="advanced_config_health_desc">Test the connection to the selected backend server.</string>
+    <string name="advanced_config_test_connection">Test Connection</string>
+    <string name="advanced_config_testing">Testing…</string>
+    <string name="advanced_config_connected">Connected</string>
+    <string name="advanced_config_connection_failed">Connection Failed</string>
+    <string name="advanced_config_status">Status:</string>
+    <string name="advanced_config_status_value">HTTP %1$d</string>
+    <string name="advanced_config_response_time">Response Time:</string>
+    <string name="advanced_config_error">Error:</string>
+    <string name="advanced_config_response">Response:</string>
+
+    <!-- Error Content -->
+    <string name="error_no_connection">No Connection</string>
+    <string name="error_server">Server Error</string>
+    <string name="error_timeout">Request Timed Out</string>
+    <string name="error_request_failed">Request Failed</string>
+    <string name="error_data">Data Error</string>
+    <string name="error_unknown">Something Went Wrong</string>
+
+    <!-- Share -->
+    <string name="share_train_text">Check out Train %1$s on TrackRat: %2$s</string>
+    <string name="share_train_chooser">Share Train %1$s</string>
+    <string name="share_journey_text">Check out trains from %1$s to %2$s on TrackRat: %3$s</string>
+    <string name="share_journey_chooser">Share Journey</string>
 </resources>

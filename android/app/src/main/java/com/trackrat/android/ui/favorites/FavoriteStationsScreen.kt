@@ -15,9 +15,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.trackrat.android.R
 import com.trackrat.android.data.preferences.UserPreferencesRepository
 import com.trackrat.android.navigation.TrackRatNavigator
 import com.trackrat.android.ui.components.GlassmorphicCard
@@ -45,7 +47,7 @@ fun FavoriteStationsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Favorite Stations",
+                        text = stringResource(R.string.favorites_title),
                         fontWeight = FontWeight.SemiBold
                     )
                 },
@@ -53,7 +55,7 @@ fun FavoriteStationsScreen(
                     IconButton(onClick = { navigator.navigateBack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 }
@@ -79,12 +81,12 @@ fun FavoriteStationsScreen(
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                     )
                     Text(
-                        text = "No favorite stations yet",
+                        text = stringResource(R.string.favorites_empty_title),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                     Text(
-                        text = "Tap the heart icon on station list to add favorites",
+                        text = stringResource(R.string.favorites_empty_subtitle),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                     )
@@ -136,7 +138,7 @@ private fun FavoriteStationCard(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "Station Code: $stationCode",
+                    text = stringResource(R.string.favorites_station_code, stationCode),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
@@ -153,7 +155,7 @@ private fun FavoriteStationCard(
             ) {
                 Icon(
                     imageVector = Icons.Default.Favorite,
-                    contentDescription = "Remove from favorites",
+                    contentDescription = stringResource(R.string.favorites_remove),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }

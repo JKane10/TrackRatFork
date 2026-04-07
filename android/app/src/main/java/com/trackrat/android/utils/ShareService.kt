@@ -3,6 +3,7 @@ package com.trackrat.android.utils
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.ContextCompat.startActivity
+import com.trackrat.android.R
 
 /**
  * Service for sharing train information via deep links
@@ -18,7 +19,7 @@ object ShareService {
      */
     fun shareTrain(context: Context, trainNumber: String) {
         val deepLink = "trackrat://train/$trainNumber"
-        val shareText = "Check out Train $trainNumber on TrackRat: $deepLink"
+        val shareText = context.getString(R.string.share_train_text, trainNumber, deepLink)
 
         val sendIntent = Intent().apply {
             action = Intent.ACTION_SEND
@@ -26,7 +27,7 @@ object ShareService {
             type = "text/plain"
         }
 
-        val shareIntent = Intent.createChooser(sendIntent, "Share Train $trainNumber")
+        val shareIntent = Intent.createChooser(sendIntent, context.getString(R.string.share_train_chooser, trainNumber))
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(shareIntent)
     }
@@ -40,7 +41,7 @@ object ShareService {
      */
     fun shareJourney(context: Context, fromStation: String, toStation: String) {
         val deepLink = "trackrat://journey?from=$fromStation&to=$toStation"
-        val shareText = "Check out trains from $fromStation to $toStation on TrackRat: $deepLink"
+        val shareText = context.getString(R.string.share_journey_text, fromStation, toStation, deepLink)
 
         val sendIntent = Intent().apply {
             action = Intent.ACTION_SEND
@@ -48,7 +49,7 @@ object ShareService {
             type = "text/plain"
         }
 
-        val shareIntent = Intent.createChooser(sendIntent, "Share Journey")
+        val shareIntent = Intent.createChooser(sendIntent, context.getString(R.string.share_journey_chooser))
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(shareIntent)
     }

@@ -15,11 +15,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.trackrat.android.R
 import com.trackrat.android.data.models.StopDetail
 import com.trackrat.android.ui.components.GlassmorphicCard
 import com.trackrat.android.ui.trainlist.Tuple4
@@ -52,12 +54,12 @@ fun TrainDetailScreen(
                 title = {
                     Column {
                         Text(
-                            text = "Train $trainId",
+                            text = stringResource(R.string.train_detail_title, trainId),
                             style = MaterialTheme.typography.titleMedium
                         )
                         uiState.train?.let { train ->
                             Text(
-                                text = "${train.route.origin} → ${train.route.destination}",
+                                text = stringResource(R.string.train_detail_route, train.route.origin, train.route.destination),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -68,7 +70,7 @@ fun TrainDetailScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 },
@@ -76,7 +78,7 @@ fun TrainDetailScreen(
                     IconButton(onClick = { viewModel.refresh() }) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = "Refresh"
+                            contentDescription = stringResource(R.string.refresh)
                         )
                     }
                 },
@@ -101,7 +103,7 @@ fun TrainDetailScreen(
                             CircularProgressIndicator(
                                 color = Color(0xFFFF6600)
                             )
-                            Text("Loading train details...")
+                            Text(stringResource(R.string.train_detail_loading))
                         }
                     }
                 }
@@ -117,12 +119,12 @@ fun TrainDetailScreen(
                             modifier = Modifier.padding(32.dp)
                         ) {
                             Text(
-                                text = "Error Loading Train",
+                                text = stringResource(R.string.train_detail_error_title),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.error
                             )
                             Text(
-                                text = uiState.error?.message ?: "Unknown error occurred",
+                                text = uiState.error?.message ?: stringResource(R.string.train_detail_unknown_error),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
@@ -133,7 +135,7 @@ fun TrainDetailScreen(
                                     containerColor = Color(0xFFFF6600)
                                 )
                             ) {
-                                Text("Try Again")
+                                Text(stringResource(R.string.try_again))
                             }
                         }
                     }
@@ -156,11 +158,11 @@ fun TrainDetailScreen(
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "Train Not Found",
+                                text = stringResource(R.string.train_detail_not_found),
                                 style = MaterialTheme.typography.titleMedium
                             )
                             Text(
-                                text = "This train may not be running today or the information is not available.",
+                                text = stringResource(R.string.train_detail_not_found_subtitle),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
@@ -191,7 +193,7 @@ fun TrainDetailScreen(
                             // Journey stops
                             item {
                                 Text(
-                                    text = "Journey Stops",
+                                    text = stringResource(R.string.train_detail_journey_stops),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.padding(vertical = 8.dp)
@@ -213,7 +215,7 @@ fun TrainDetailScreen(
                             item {
                                 if (uiState.lastUpdated > 0) {
                                     Text(
-                                        text = "Updated ${formatLastUpdated(uiState.lastUpdated)}",
+                                        text = stringResource(R.string.updated_time, formatLastUpdated(uiState.lastUpdated)),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier
@@ -290,7 +292,7 @@ fun StopCard(
                 stop.scheduledArrival?.let { scheduledArr ->
                     if (stop.scheduledDeparture == null || scheduledArr != stop.scheduledDeparture) {
                         Text(
-                            text = "arr ${scheduledArr.format(DateTimeFormatter.ofPattern("h:mm a"))}",
+                            text = stringResource(R.string.train_detail_arrival, scheduledArr.format(DateTimeFormatter.ofPattern("h:mm a"))),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -300,7 +302,7 @@ fun StopCard(
                 // Track if available
                 if (!stop.track.isNullOrEmpty()) {
                     Text(
-                        text = "Track ${stop.track}",
+                        text = stringResource(R.string.train_detail_track, stop.track),
                         style = MaterialTheme.typography.bodySmall,
                         color = Color(0xFFFF6600),
                         fontWeight = FontWeight.Medium

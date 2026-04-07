@@ -20,9 +20,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.trackrat.android.R
 import com.trackrat.android.data.models.ServerEnvironment
 import com.trackrat.android.navigation.TrackRatNavigator
 
@@ -44,7 +46,7 @@ fun AdvancedConfigScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Advanced Configuration",
+                        text = stringResource(R.string.advanced_config_title),
                         fontWeight = FontWeight.SemiBold
                     )
                 },
@@ -52,7 +54,7 @@ fun AdvancedConfigScreen(
                     IconButton(onClick = { navigator.navigateBack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 }
@@ -114,14 +116,14 @@ private fun ServerEnvironmentSection(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Backend Server",
+            text = stringResource(R.string.advanced_config_backend_server),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface
         )
 
         Text(
-            text = "Choose which backend server to connect to. Production is recommended for normal use.",
+            text = stringResource(R.string.advanced_config_backend_desc),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
@@ -161,7 +163,7 @@ private fun ServerEnvironmentSection(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Save Changes",
+                    text = stringResource(R.string.advanced_config_save),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -224,7 +226,7 @@ private fun ServerEnvironmentRow(
         if (isSelected) {
             Icon(
                 imageVector = Icons.Default.CheckCircle,
-                contentDescription = "Selected",
+                contentDescription = stringResource(R.string.selected),
                 tint = Color(0xFFFF6B35),
                 modifier = Modifier.size(24.dp)
             )
@@ -265,14 +267,14 @@ private fun HealthCheckSection(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Backend Server Health",
+            text = stringResource(R.string.advanced_config_health_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface
         )
 
         Text(
-            text = "Test the connection to the selected backend server.",
+            text = stringResource(R.string.advanced_config_health_desc),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
@@ -296,10 +298,10 @@ private fun HealthCheckSection(
                     strokeWidth = 2.dp
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Testing...")
+                Text(stringResource(R.string.advanced_config_testing))
             } else {
                 Text(
-                    text = "Test Connection",
+                    text = stringResource(R.string.advanced_config_test_connection),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -354,7 +356,7 @@ private fun HealthCheckResultCard(result: com.trackrat.android.data.models.Healt
                 modifier = Modifier.size(24.dp)
             )
             Text(
-                text = if (result.success) "Connected" else "Connection Failed",
+                text = if (result.success) stringResource(R.string.advanced_config_connected) else stringResource(R.string.advanced_config_connection_failed),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -366,21 +368,21 @@ private fun HealthCheckResultCard(result: com.trackrat.android.data.models.Healt
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             result.statusCode?.let { code ->
-                DetailRow(label = "Status:", value = "HTTP $code")
+                DetailRow(label = stringResource(R.string.advanced_config_status), value = stringResource(R.string.advanced_config_status_value, code))
             }
 
             DetailRow(
-                label = "Response Time:",
+                label = stringResource(R.string.advanced_config_response_time),
                 value = String.format("%.2fs", result.responseTime)
             )
 
             result.errorMessage?.let { error ->
-                DetailRow(label = "Error:", value = error)
+                DetailRow(label = stringResource(R.string.advanced_config_error), value = error)
             }
 
             result.responseBody?.let { body ->
                 if (result.success) {
-                    DetailRow(label = "Response:", value = body)
+                    DetailRow(label = stringResource(R.string.advanced_config_response), value = body)
                 }
             }
         }

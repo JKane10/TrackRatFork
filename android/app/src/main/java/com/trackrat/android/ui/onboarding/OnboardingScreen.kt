@@ -12,8 +12,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
@@ -25,10 +23,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.trackrat.android.R
 import com.trackrat.android.data.models.Station
 import com.trackrat.android.data.models.Stations
 import com.trackrat.android.data.models.TransitSystem
@@ -66,7 +66,7 @@ fun OnboardingScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Welcome to TrackRat",
+                        text = stringResource(R.string.onboarding_welcome),
                         fontWeight = FontWeight.SemiBold
                     )
                 },
@@ -79,7 +79,7 @@ fun OnboardingScreen(
                         }) {
                             Icon(
                                 Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
+                                contentDescription = stringResource(R.string.back)
                             )
                         }
                     }
@@ -109,8 +109,8 @@ fun OnboardingScreen(
 
                     1 -> StationPickerPage(
                         icon = Icons.Default.Home,
-                        title = "Primary Departure Station",
-                        subtitle = "Where do you typically start your journey?",
+                        title = stringResource(R.string.onboarding_primary_departure),
+                        subtitle = stringResource(R.string.onboarding_departure_subtitle),
                         selectedStation = primaryDeparture,
                         searchResults = departureSearchResults,
                         defaultStations = Stations.DEPARTURE_STATIONS,
@@ -122,8 +122,8 @@ fun OnboardingScreen(
 
                     2 -> StationPickerPage(
                         icon = Icons.Default.Work,
-                        title = "Primary Destination Station",
-                        subtitle = "Where do you typically travel to?",
+                        title = stringResource(R.string.onboarding_primary_destination),
+                        subtitle = stringResource(R.string.onboarding_destination_subtitle),
                         selectedStation = primaryDestination,
                         searchResults = destinationSearchResults,
                         defaultStations = Stations.ALL_STATIONS,
@@ -179,9 +179,9 @@ fun OnboardingScreen(
                     Spacer(Modifier.width(8.dp))
                     Text(
                         text = when (pagerState.currentPage) {
-                            0 -> if (selectedSystem != null) "Next" else "Skip"
-                            1 -> if (primaryDeparture != null) "Next" else "Skip"
-                            else -> if (primaryDestination != null) "Get Started" else "Skip"
+                            0 -> if (selectedSystem != null) stringResource(R.string.next) else stringResource(R.string.skip)
+                            1 -> if (primaryDeparture != null) stringResource(R.string.next) else stringResource(R.string.skip)
+                            else -> if (primaryDestination != null) stringResource(R.string.onboarding_get_started) else stringResource(R.string.skip)
                         }
                     )
                 }
@@ -209,7 +209,7 @@ private fun TransitSystemPage(
         Spacer(Modifier.height(24.dp))
 
         Text(
-            text = "Which transit system\ndo you use the most?",
+            text = stringResource(R.string.onboarding_transit_system_question),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -219,7 +219,7 @@ private fun TransitSystemPage(
         Spacer(Modifier.height(8.dp))
 
         Text(
-            text = "You can always change this later",
+            text = stringResource(R.string.onboarding_change_later),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             textAlign = TextAlign.Center,
@@ -250,7 +250,7 @@ private fun TransitSystemPage(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = if (showAdditional) "▲  Hide Additional Systems" else "▼  Additional Systems",
+                        text = if (showAdditional) stringResource(R.string.onboarding_hide_additional) else stringResource(R.string.onboarding_show_additional),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                     )
@@ -260,7 +260,7 @@ private fun TransitSystemPage(
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
                     ) {
                         Text(
-                            text = "beta",
+                            text = stringResource(R.string.beta),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
@@ -307,7 +307,7 @@ private fun SystemCard(
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = "Selected",
+                    contentDescription = stringResource(R.string.selected),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -422,7 +422,7 @@ private fun StationPickerPage(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
-                                    contentDescription = "Clear selection",
+                                    contentDescription = stringResource(R.string.clear_selection),
                                     tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                                     modifier = Modifier.size(16.dp)
                                 )
@@ -443,14 +443,14 @@ private fun StationPickerPage(
                 },
                 placeholder = {
                     Text(
-                        text = "Search stations",
+                        text = stringResource(R.string.onboarding_search_stations),
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                     )
                 },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
+                        contentDescription = stringResource(R.string.search),
                         tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                     )
                 },
@@ -462,7 +462,7 @@ private fun StationPickerPage(
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = "Clear search",
+                                contentDescription = stringResource(R.string.clear_search),
                                 tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                             )
                         }
@@ -519,7 +519,7 @@ private fun StationPickerPage(
                         if (isSelected) {
                             Icon(
                                 imageVector = Icons.Default.Check,
-                                contentDescription = "Selected",
+                                contentDescription = stringResource(R.string.selected),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }

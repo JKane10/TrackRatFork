@@ -16,10 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.trackrat.android.R
 import com.trackrat.android.data.models.Station
 import com.trackrat.android.navigation.TrackRatNavigator
 import com.trackrat.android.ui.components.GlassmorphicSearchCard
@@ -48,10 +50,10 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Settings", fontWeight = FontWeight.SemiBold) },
+                title = { Text(text = stringResource(R.string.settings), fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
                     IconButton(onClick = { navigator.navigateBack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -67,7 +69,7 @@ fun ProfileScreen(
         ) {
             // Favorite Stations Section
             item {
-                ProfileSectionCard(title = "Favorite Stations") {
+                ProfileSectionCard(title = stringResource(R.string.profile_favorite_stations)) {
                     PrimaryStationRow(
                         icon = Icons.Default.Home,
                         station = primaryDeparture,
@@ -97,7 +99,7 @@ fun ProfileScreen(
                             modifier = Modifier.size(24.dp)
                         )
                         Text(
-                            text = "Add Favorite Station",
+                            text = stringResource(R.string.profile_add_favorite),
                             style = MaterialTheme.typography.bodyLarge,
                             color = Color(0xFFFF6B35)
                         )
@@ -107,11 +109,11 @@ fun ProfileScreen(
 
             // Support Section
             item {
-                ProfileSectionCard(title = "Support") {
+                ProfileSectionCard(title = stringResource(R.string.profile_support)) {
                     ProfileActionRow(
                         icon = Icons.Default.Info,
-                        text = "Report Issues",
-                        subtitle = "Send new ideas too!",
+                        text = stringResource(R.string.profile_report_issues),
+                        subtitle = stringResource(R.string.profile_report_subtitle),
                         isExternalLink = true,
                         onClick = { viewModel.openSignalLink() }
                     )
@@ -120,16 +122,16 @@ fun ProfileScreen(
 
             // Community Section
             item {
-                ProfileSectionCard(title = "Community") {
+                ProfileSectionCard(title = stringResource(R.string.profile_community)) {
                     ProfileActionRow(
                         icon = Icons.Default.PlayArrow,
-                        text = "YouTube Channel",
+                        text = stringResource(R.string.profile_youtube),
                         isExternalLink = true,
                         onClick = { viewModel.openYouTube() }
                     )
                     ProfileActionRow(
                         icon = Icons.Default.Favorite,
-                        text = "Instagram",
+                        text = stringResource(R.string.profile_instagram),
                         isExternalLink = true,
                         onClick = { viewModel.openInstagram() }
                     )
@@ -138,10 +140,10 @@ fun ProfileScreen(
 
             // Settings Section
             item {
-                ProfileSectionCard(title = "Settings") {
+                ProfileSectionCard(title = stringResource(R.string.profile_settings_section)) {
                     ProfileActionRow(
                         icon = Icons.Default.Settings,
-                        text = "Advanced Configuration",
+                        text = stringResource(R.string.profile_advanced_config),
                         subtitle = uiState.currentEnvironment?.name,
                         isExternalLink = false,
                         onClick = { navigator.navigateToAdvancedConfig() }
@@ -155,7 +157,7 @@ fun ProfileScreen(
     if (editingStation != null) {
         StationPickerSheet(
             sheetState = sheetState,
-            title = if (editingStation == EditingStation.HOME) "Set Home Station" else "Set Work Station",
+            title = if (editingStation == EditingStation.HOME) stringResource(R.string.profile_set_home_station) else stringResource(R.string.profile_set_work_station),
             onStationSelected = { station ->
                 if (editingStation == EditingStation.HOME)
                     viewModel.setPrimaryDeparture(station.code)
@@ -163,7 +165,7 @@ fun ProfileScreen(
                     viewModel.setPrimaryDestination(station.code)
                 editingStation = null
             },
-            onDismiss = { editingStation = null },
+            onDismiss = {},
             viewModel = viewModel
         )
     }
@@ -191,7 +193,7 @@ private fun PrimaryStationRow(
             modifier = Modifier.size(32.dp)
         )
         Text(
-            text = station?.name ?: "Not set",
+            text = station?.name ?: stringResource(R.string.not_set),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = if (station != null) FontWeight.Medium else FontWeight.Normal,
             color = if (station != null)
@@ -209,7 +211,7 @@ private fun PrimaryStationRow(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Cancel,
-                    contentDescription = "Clear",
+                    contentDescription = stringResource(R.string.clear),
                     tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
                     modifier = Modifier.size(20.dp)
                 )
@@ -261,7 +263,7 @@ private fun StationPickerSheet(
                     },
                     placeholder = {
                         Text(
-                            "Search stations",
+                            stringResource(R.string.profile_search_stations),
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                         )
                     },
@@ -280,7 +282,7 @@ private fun StationPickerSheet(
                             }) {
                                 Icon(
                                     Icons.Default.Close,
-                                    contentDescription = "Clear",
+                                    contentDescription = stringResource(R.string.clear),
                                     tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                                 )
                             }

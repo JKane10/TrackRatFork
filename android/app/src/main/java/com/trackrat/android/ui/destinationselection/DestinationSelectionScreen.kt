@@ -15,9 +15,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.trackrat.android.R
 import com.trackrat.android.data.Stations
 import com.trackrat.android.ui.components.GlassmorphicCard
 import com.trackrat.android.ui.components.GlassmorphicSearchCard
@@ -50,7 +52,7 @@ fun DestinationSelectionScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Where would you like to go?",
+                        text = stringResource(R.string.destination_selection_header),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.fillMaxWidth()
@@ -60,7 +62,7 @@ fun DestinationSelectionScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.back),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
@@ -91,14 +93,14 @@ fun DestinationSelectionScreen(
                     },
                     placeholder = {
                         Text(
-                            "Search destinations...",
+                            stringResource(R.string.destination_selection_search_hint),
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                         )
                     },
                     leadingIcon = {
                         Icon(
                             Icons.Default.Search,
-                            contentDescription = "Search",
+                            contentDescription = stringResource(R.string.search),
                             tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                         )
                     },
@@ -153,7 +155,7 @@ fun DestinationSelectionScreen(
                             if (station.code == primaryDestinationCode) {
                                 Icon(
                                     imageVector = Icons.Default.Work,
-                                    contentDescription = "Primary destination station",
+                                    contentDescription = stringResource(R.string.destination_selection_primary),
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(24.dp)
                                 )
@@ -171,7 +173,7 @@ fun DestinationSelectionScreen(
                             ) {
                                 Icon(
                                     imageVector = if (isFavorited) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                    contentDescription = if (isFavorited) "Remove from favorites" else "Add to favorites",
+                                    contentDescription = if (isFavorited) stringResource(R.string.station_selection_remove_favorite) else stringResource(R.string.station_selection_add_favorite),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -190,9 +192,9 @@ fun DestinationSelectionScreen(
                         ) {
                             Text(
                                 text = if (searchText.isNotBlank()) {
-                                    "No stations found matching \"$searchText\""
+                                    stringResource(R.string.destination_selection_no_match, searchText)
                                 } else {
-                                    "No stations available"
+                                    stringResource(R.string.destination_selection_no_stations)
                                 },
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)

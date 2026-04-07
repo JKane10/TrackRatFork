@@ -18,10 +18,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.trackrat.android.R
 import kotlinx.coroutines.delay
 
 /**
@@ -53,7 +55,7 @@ fun SegmentedTrackPredictionBar(
     ) {
         // Header
         Text(
-            text = "Track Predictions",
+            text = stringResource(R.string.predictions_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = Color(0xFFFFB84D)
@@ -83,7 +85,7 @@ fun SegmentedTrackPredictionBar(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No clear favorite",
+                        text = stringResource(R.string.predictions_no_clear_favorite),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -113,7 +115,7 @@ fun SegmentedTrackPredictionBar(
                             // Only show percentages for segments >= 15%
                             if (probability >= 0.15) {
                                 Text(
-                                    text = "${(probability * 100).toInt()}%",
+                                    text = stringResource(R.string.predictions_percentage, (probability * 100).toInt()),
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Medium,
                                     color = Color.White,
@@ -130,7 +132,7 @@ fun SegmentedTrackPredictionBar(
 
             else -> {
                 Text(
-                    text = "No prediction data available",
+                    text = stringResource(R.string.predictions_no_data),
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray.copy(alpha = 0.7f),
                     fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
@@ -220,7 +222,7 @@ private fun PlatformSegment(
                 modifier = Modifier.padding(vertical = 8.dp)
             ) {
                 Text(
-                    text = "Tracks",
+                    text = stringResource(R.string.predictions_tracks_label),
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black,

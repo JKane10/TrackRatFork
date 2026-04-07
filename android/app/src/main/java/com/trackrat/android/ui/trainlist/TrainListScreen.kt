@@ -17,10 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.trackrat.android.R
 import com.trackrat.android.data.models.TrainV2
 import com.trackrat.android.ui.components.ErrorContent
 import com.trackrat.android.ui.components.GlassmorphicCard
@@ -68,15 +70,15 @@ fun TrainListScreen(
                 title = {
                     Column {
                         Text(
-                            text = if (toStation != null) 
-                                "Trains to ${uiState.toStationName ?: toStation}"
-                            else 
-                                "All Departures",
+                            text = if (toStation != null)
+                                stringResource(R.string.train_list_trains_to, uiState.toStationName ?: toStation)
+                            else
+                                stringResource(R.string.train_list_all_departures),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onBackground
                         )
                         Text(
-                            text = "From ${uiState.fromStationName ?: fromStation}",
+                            text = stringResource(R.string.train_list_from, uiState.fromStationName ?: fromStation),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
                         )
@@ -89,7 +91,7 @@ fun TrainListScreen(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 },
@@ -100,7 +102,7 @@ fun TrainListScreen(
                     }) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = "Refresh"
+                            contentDescription = stringResource(R.string.refresh)
                         )
                     }
                 },
@@ -148,11 +150,11 @@ fun TrainListScreen(
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "No Trains Found",
+                                text = stringResource(R.string.train_list_no_trains),
                                 style = MaterialTheme.typography.titleMedium
                             )
                             Text(
-                                text = "There are currently no trains scheduled for this route.",
+                                text = stringResource(R.string.train_list_no_trains_subtitle),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -170,7 +172,7 @@ fun TrainListScreen(
                         item {
                             if (uiState.lastUpdated > 0) {
                                 Text(
-                                    text = "Updated ${formatLastUpdated(uiState.lastUpdated)}",
+                                    text = stringResource(R.string.updated_time, formatLastUpdated(uiState.lastUpdated)),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.padding(bottom = 8.dp)
@@ -262,13 +264,13 @@ private fun TrainCardContent(
         // Left: train number + destination
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "Train ${train.trainId}",
+                text = stringResource(R.string.train_list_train_id, train.trainId),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = textColor
             )
             Text(
-                text = "to ${train.destination ?: train.terminalStationName}",
+                text = stringResource(R.string.train_list_to_destination, train.destination ?: train.terminalStationName),
                 style = MaterialTheme.typography.bodySmall,
                 color = textColor.copy(alpha = 0.7f),
                 maxLines = 1,
@@ -302,7 +304,7 @@ private fun TrainCardContent(
                         MaterialTheme.colorScheme.primaryContainer
                 ) {
                     Text(
-                        text = "Tr ${train.track}",
+                        text = stringResource(R.string.train_list_track, train.track),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = if (isBoarding) Color.White else MaterialTheme.colorScheme.onPrimaryContainer,

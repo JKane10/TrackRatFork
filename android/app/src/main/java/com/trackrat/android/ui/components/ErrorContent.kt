@@ -14,10 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.trackrat.android.R
 import com.trackrat.android.data.models.ApiException
 import com.trackrat.android.utils.Constants
 import com.trackrat.android.utils.HapticFeedbackHelper
@@ -29,10 +31,10 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun ErrorContent(
+    modifier: Modifier = Modifier,
     error: ApiException,
     canRetry: Boolean = true,
     onRetryClick: () -> Unit = {},
-    modifier: Modifier = Modifier,
     hapticFeedbackEnabled: Boolean = true
 ) {
     val context = LocalContext.current
@@ -48,7 +50,7 @@ fun ErrorContent(
             ErrorInfo(
                 icon = Icons.Default.CloudOff,
                 iconTint = MaterialTheme.colorScheme.error,
-                title = "No Connection",
+                title = stringResource(R.string.error_no_connection),
                 subtitle = error.message
             )
         }
@@ -56,7 +58,7 @@ fun ErrorContent(
             ErrorInfo(
                 icon = Icons.Default.Error,
                 iconTint = MaterialTheme.colorScheme.error,
-                title = "Server Error",
+                title = stringResource(R.string.error_server),
                 subtitle = error.message
             )
         }
@@ -64,7 +66,7 @@ fun ErrorContent(
             ErrorInfo(
                 icon = Icons.Default.Warning,
                 iconTint = MaterialTheme.colorScheme.error,
-                title = "Request Timed Out",
+                title = stringResource(R.string.error_timeout),
                 subtitle = error.message
             )
         }
@@ -72,7 +74,7 @@ fun ErrorContent(
             ErrorInfo(
                 icon = Icons.Default.Warning,
                 iconTint = MaterialTheme.colorScheme.error,
-                title = "Request Failed",
+                title = stringResource(R.string.error_request_failed),
                 subtitle = error.message
             )
         }
@@ -80,7 +82,7 @@ fun ErrorContent(
             ErrorInfo(
                 icon = Icons.Default.Error,
                 iconTint = MaterialTheme.colorScheme.error,
-                title = "Data Error",
+                title = stringResource(R.string.error_data),
                 subtitle = error.message
             )
         }
@@ -88,7 +90,7 @@ fun ErrorContent(
             ErrorInfo(
                 icon = Icons.Default.Error,
                 iconTint = MaterialTheme.colorScheme.error,
-                title = "Something Went Wrong",
+                title = stringResource(R.string.error_unknown),
                 subtitle = error.message
             )
         }
@@ -137,7 +139,7 @@ fun ErrorContent(
                     ),
                     modifier = Modifier.padding(top = Constants.PADDING_SMALL_DP.dp)
                 ) {
-                    Text("Try Again")
+                    Text(stringResource(R.string.try_again))
                 }
             }
         }

@@ -17,8 +17,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.trackrat.android.R
 import com.trackrat.android.ui.components.GlassmorphicCard
 import com.trackrat.android.ui.components.GlassmorphicCardElevated
 import com.trackrat.android.ui.components.GlassmorphicSearchCard
@@ -69,7 +71,7 @@ fun StationSelectionScreen(
         ) {
             // Header
             Text(
-                text = "Where would you like to leave from?",
+                text = stringResource(R.string.station_selection_header),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onBackground,
@@ -81,7 +83,7 @@ fun StationSelectionScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "RatSense Suggestions",
+                        text = stringResource(R.string.station_selection_ratsense),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary
@@ -117,7 +119,7 @@ fun StationSelectionScreen(
                                     }
                                     Icon(
                                         Icons.Default.Check,
-                                        contentDescription = "Suggested",
+                                        contentDescription = stringResource(R.string.station_selection_suggested),
                                         tint = MaterialTheme.colorScheme.primary
                                     )
                                 }
@@ -142,14 +144,14 @@ fun StationSelectionScreen(
                     },
                     placeholder = {
                         Text(
-                            "Search stations or train number",
+                            stringResource(R.string.station_selection_search_hint),
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                         )
                     },
                     leadingIcon = {
                         Icon(
                             Icons.Default.Search,
-                            contentDescription = "Search",
+                            contentDescription = stringResource(R.string.search),
                             tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                         )
                     },
@@ -157,7 +159,7 @@ fun StationSelectionScreen(
                         IconButton(onClick = onNavigateToProfile) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
-                                contentDescription = "Settings",
+                                contentDescription = stringResource(R.string.settings),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(22.dp)
                             )
@@ -198,23 +200,23 @@ fun StationSelectionScreen(
                             ) {
                                 Column {
                                     Text(
-                                        text = "Train ${searchText.trim()}",
+                                        text = stringResource(R.string.station_selection_train_number, searchText.trim()),
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onBackground
                                     )
                                     Text(
-                                        text = if (searchText.startsWith("A", ignoreCase = true)) 
-                                            "Amtrak Train" 
-                                        else 
-                                            "NJ Transit Train",
+                                        text = if (searchText.startsWith("A", ignoreCase = true))
+                                            stringResource(R.string.station_selection_amtrak_train)
+                                        else
+                                            stringResource(R.string.station_selection_njt_train),
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                                     )
                                 }
                                 Icon(
                                     Icons.Default.Train,
-                                    contentDescription = "Train",
+                                    contentDescription = stringResource(R.string.station_selection_train_icon),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -248,7 +250,7 @@ fun StationSelectionScreen(
                                 if (station.code == primaryDepartureCode) {
                                     Icon(
                                         imageVector = Icons.Default.Home,
-                                        contentDescription = "Primary departure station",
+                                        contentDescription = stringResource(R.string.station_selection_primary_departure),
                                         tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(24.dp)
                                     )
@@ -266,7 +268,7 @@ fun StationSelectionScreen(
                                 ) {
                                     Icon(
                                         imageVector = if (isFavorited) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                        contentDescription = if (isFavorited) "Remove from favorites" else "Add to favorites",
+                                        contentDescription = if (isFavorited) stringResource(R.string.station_selection_remove_favorite) else stringResource(R.string.station_selection_add_favorite),
                                         tint = MaterialTheme.colorScheme.primary
                                     )
                                 }
